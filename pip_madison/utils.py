@@ -3,7 +3,6 @@ import os
 import platform
 import re
 import sys
-print(sys.executable)
 from pySystem import System
 import bs4
 import requests
