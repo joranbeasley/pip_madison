@@ -5,6 +5,7 @@ setuptools.setup(
     version=pip_madison.__version__,
     author="Joran Beasley",
     author_email="joranbeasley@gmail.com",
+    url="https://github.com/joranbeasley/pip_madison",
     description="A simple tool to list available version releases",
     packages=['pip_madison'],
     entry_points={
