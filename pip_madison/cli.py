@@ -5,6 +5,7 @@ import click
 from pip_madison.utils import get_available_versions_files_and_urls, get_index_urls, star_credentials_url
 
 
+# print(sys.argv)
 # class DefaultCommandGroup(click.Group):
 #     ignore_unknown_options = True
 #     """allow a default command for a group"""

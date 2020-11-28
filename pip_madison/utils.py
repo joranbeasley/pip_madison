@@ -84,11 +84,12 @@ def get_available_versions_files_and_urls(package_url, py=None,os=None,endswith=
                 if x is None:
                     return -1
                 return int(x)
-            measure = list(map(intOrNone, [match.group('major'),match.group('minor'),match.group('build')]))
+            match = match.groupdict()
+            measure = list(map(intOrNone, [match.get('major',-1),match.get('minor',-1),match.get('build',-1)]))
             details = {"list": measure, 'package_name':package_name,
-                       'ver': match.group('ver'),
-                       'os':match.group('os') or "any",
-                       'py':match.group('py') or "any",
+                       'ver': match.get('ver',"??????"),
+                       'os':match.get('os','any') or "any",
+                       'py':match.get('py','any') or "any",
                        'fname': ele.text,
                        'error': 'false', 'uri': ele.attrs['href'],'index-url':package_index}
             return details
