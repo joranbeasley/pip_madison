@@ -46,4 +46,4 @@ jobs:
         rm -rf pip_madison.egg-info
     - uses: stefanzweifel/git-auto-commit-action@v4
       with:
-        commit_message: Deploy Version ${GITHUB_REF##*/} to PyPi.
+        commit_message: Deploy Version ${{ github.event.release.tag_name }} to PyPi.
