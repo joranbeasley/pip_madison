@@ -13,6 +13,7 @@ Welcome to pip-madison's documentation!
    install
    support
    usage
+   api_reference
 
 
 

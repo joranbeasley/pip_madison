@@ -1,5 +1,5 @@
 =====
-USAGE
+Usage
 =====
 
 Generally pip-madison is expected to be used as a command line tool
@@ -35,3 +35,5 @@ Generally pip-madison is expected to be used as a command line tool
                                      see `pip-madison help format`
 
      --help                          Show this message and exit.
+
+we are more interested in the API in this documentation
