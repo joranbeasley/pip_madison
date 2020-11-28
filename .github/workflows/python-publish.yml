@@ -3,18 +3,11 @@
 
 name: Upload Python Package
 
-on:
-  workflow_dispatch:
-    inputs:
-      name:
-        description: 'Person to greet'
-        required: true
-        default: 'Mona the Octocat'
-      home:
-        description: 'location'
-        required: false
-        default: 'The Octoverse'
-
+on: 
+  release:
+    types: # This configuration does not affect the page_build event above
+      - created
+        
 jobs:
   deploy:
 
@@ -28,6 +21,8 @@ jobs:
         python-version: '3.x'
     - name: Install dependencies
       run: |
+        echo ${GITHUB_REF##*/}
+        env
         python -m pip install --upgrade pip
         pip install setuptools wheel twine
     - name: Build and publish
