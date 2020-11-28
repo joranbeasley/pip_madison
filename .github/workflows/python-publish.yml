@@ -37,3 +37,6 @@ jobs:
       run: |
         python setup.py sdist bdist_wheel
         twine upload dist/*
+    - uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        commit_message: Deploy Version ${{ github.event.inputs.name }} to PyPi.
