@@ -1,6 +1,6 @@
 # pip-madison
 
-inspired by apt-cache madison
+inspired by `apt-cache madison`
 
 this tool will show you the versions available for a given
 package on pypi (or other pypi type indexs)
@@ -17,6 +17,7 @@ Looking In: https://pypi.org/simple
     1.4.1| numpy-1.4.1.tar.gz
     1.3.0| numpy-1.3.0.tar.gz
 ```
+see documentation for more usage examples
 
 ## API Useage
 
@@ -25,3 +26,5 @@ from pip_madison.utils import get_available_versions_files_and_urls, get_index_u
 index_url = get_index_urls()[0]
 get_available_versions_files_and_urls(index_url+"/numpy/")
 ```
+
+see documentation for more api documentation and examples
