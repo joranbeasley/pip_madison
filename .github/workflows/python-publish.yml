@@ -38,9 +38,11 @@ jobs:
       run: |
         python setup.py sdist bdist_wheel
         # twine upload dist/*
+    - name: Cleanup
+      run: |
         rm -rf dist
         rm -rf build
-        rm -rf pip_madison.egg.info
+        rm -rf pip_madison.egg-info
     - uses: stefanzweifel/git-auto-commit-action@v4
       with:
         commit_message: Deploy Version ${{ github.event.inputs.name }} to PyPi.
