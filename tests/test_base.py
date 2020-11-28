@@ -34,7 +34,7 @@ def test_numpy_dat_1():
                 results['win32'].append(test)
             else:
                 results['win64'].append(test)
-            print line
+            print(line)
     assert len(results['win32']) == len(results['win64']) == 42
     assert max(results['win32'],key=lambda x:x['list'])['list'] == [1,16,6]
     assert max(results['win64'],key=lambda x:x['list'])['list'] == [1,16,6]
