@@ -1,5 +1,0 @@
-click
-bs4
-requests
-six
-pySystem
