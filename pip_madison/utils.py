@@ -1,3 +1,6 @@
+import collections
+from operator import itemgetter
+
 import configparser
 import os
 import platform
@@ -48,11 +51,9 @@ def get_extra_index_url(cfgPath=None):
     p = configparser.ConfigParser()
     p.read(cfgPath)
     return p['global'].get('extra-index-url')
-
-def get_available_versions_files_and_urls(package_url, py=None,os=None,endswith=".tar.gz"):
-    endswith=endswith.replace(".","\\.")
-    package_index, package_name = filter(None, package_url.rsplit("/", 2))
-    pattern = "%s-(?P<ver>(?P<major>\d+)\.(?P<minor>\d+)\.?(?P<build>\d+)?)"%package_name.replace("_","[-_]")
+def make_regex(package_name,py=None,os=None,endswith=".*"):
+    endswith = endswith.replace(".", "\\.")
+    pattern = "%s-(?P<ver>(?P<major>\d+)\.(?P<minor>\d+)\.?(?P<build>\d+)?)" % package_name.replace("_", "[-_]")
     endings = endswith.split("|")
     alt_endings = []
     if "\\.tar\\.gz" in endings:
@@ -63,41 +64,43 @@ def get_available_versions_files_and_urls(package_url, py=None,os=None,endswith=
         endings.remove("\\.zip")
 
     if len(endings):
-        pattern2 = ".*-(?P<py>%s[^-]*?)"%pyversion_to_re(py)
-        pattern2 +=".*-(?P<os>%s)"%os_to_re(os)
-        if len(alt_endings):
-            pattern += "(?:%s)?"%pattern2
-        else:
-            pattern += pattern2
+        pattern2 = ".*-(?P<py>%s[^-]*?)" % pyversion_to_re(py)
+        pattern2 += ".*-(?P<os>%s)" % os_to_re(os)
+        pattern += "(?:%s)?" % pattern2
+    return pattern + "(?P<ext>%s)" % endswith
 
-    pattern+="(?P<ext>%s)"%endswith
-    page = bs4.BeautifulSoup(requests.get(package_url).content, features="html.parser")
-    #print(pattern)
-
-    def mapper(ele):
-        match = re.search(pattern, ele.text,re.I)
-
+def filename_parser_factory(packagename,py=None,os=None,endswith=".*"):
+    regex = make_regex(packagename,py,os,endswith)
+    def __inner(filename):
+        match = re.match(regex,filename,re.I)
+        # print("RE:",filename,regex)
         if not match:
             return None
-        else:
-            def intOrNone(x):
-                if x is None:
-                    return -1
-                return int(x)
-            match = match.groupdict()
-            measure = list(map(intOrNone, [match.get('major',-1),match.get('minor',-1),match.get('build',-1)]))
-            details = {"list": measure, 'package_name':package_name,
-                       'ver': match.get('ver',"??????"),
-                       'os':match.get('os','any') or "any",
-                       'py':match.get('py','any') or "any",
-                       'fname': ele.text,
-                       'error': 'false', 'uri': ele.attrs['href'],'index-url':package_index}
-            return details
 
+        default_data = {"major":-1,"minor":-1,"build":-1,'os':'any','py':'any'}
+        default_data.update(match.groupdict())
+        ver_list = [int(-1 if x is None else x) for x in itemgetter("major","minor","build")(default_data)]
+        return {"list": ver_list, 'package_name': packagename,
+                   'ver': default_data.get('ver', "??????"),
+                   'os': default_data['os'] or "any",
+                   'py': default_data['py'] or "any",
+                   'fname': filename,
+                   'error': 'false'}
+    return __inner
+def get_available_versions_files_and_urls(package_url, py=None,os=None,endswith=".tar.gz"):
+    endswith=endswith.replace(".","\\.")
+    package_index, package_name = filter(None, package_url.rsplit("/", 2))
+    mapper = filename_parser_factory(package_name,py,os,endswith)
+    page = bs4.BeautifulSoup(requests.get(package_url).content, features="html.parser")
     def map_it(L):
-        return map(mapper, L)
+        for a in L:
+            result = mapper(a)
+            if not result:
+              continue
+            result.update({'uri': a.attrs['href'],'index-url':package_index})
+            yield result
 
-    data = sorted(filter(None,map_it(page.find_all("a"))), key=lambda x: x['list'], reverse=True)
+    data = sorted(map_it(page.find_all("a")), key=lambda x: x['list'], reverse=True)
     return data
 
 def get_latest_package_details(package_url,endswith=".tar.gz"):
