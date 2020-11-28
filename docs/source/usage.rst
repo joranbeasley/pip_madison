@@ -37,3 +37,13 @@ Generally pip-madison is expected to be used as a command line tool
      --help                          Show this message and exit.
 
 we are more interested in the API in this documentation
+
+Some Examples
+-------------
+
+Basic Example
+_____________
+```bash
+user@home:~ $ pit-madison numpy
+
+```
